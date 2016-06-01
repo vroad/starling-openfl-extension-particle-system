@@ -1,6 +1,8 @@
-package
-{
+package;
+//{
+    import flash.display.BitmapData;
     import flash.ui.Keyboard;
+    import openfl.Assets;
 
     import starling.core.Starling;
     import starling.display.Sprite;
@@ -13,10 +15,11 @@ package
     import starling.extensions.ParticleSystem;
     import starling.textures.Texture;
 
-    public class Demo extends Sprite
+    class Demo extends Sprite
     {
         // particle designer configurations
         
+        #if 0
         [Embed(source="../media/drugs.pex", mimeType="application/octet-stream")]
         private static const DrugsConfig:Class;
         
@@ -28,9 +31,11 @@ package
 
         [Embed(source="../media/jellyfish.pex", mimeType="application/octet-stream")]
         private static const JellyfishConfig:Class;
+        #end
 
         // particle textures
         
+        #if 0
         [Embed(source="../media/drugs_particle.png")]
         private static const DrugsParticle:Class;
         
@@ -42,27 +47,39 @@ package
         
         [Embed(source="../media/jellyfish_particle.png")]
         private static const JellyfishParticle:Class;
+        #end
 
         // member variables
         
-        private var _particleSystems:Vector.<ParticleSystem>;
+        private var _particleSystems:Array<ParticleSystem>;
         private var _particleSystem:ParticleSystem;
         
-        public function Demo()
+        public function new()
         {
-            var drugsConfig:XML = XML(new DrugsConfig());
-            var drugsTexture:Texture = Texture.fromEmbeddedAsset(DrugsParticle);
+            super();
+            var DrugsConfig:String = Assets.getText("media/drugs.pex");
+            var FireConfig:String = Assets.getText("media/fire.pex");
+            var SunConfig:String = Assets.getText("media/sun.pex");
+            var JellyfishConfig:String = Assets.getText("media/jellyfish.pex");
+            
+            var DrugsParticle:BitmapData = Assets.getBitmapData("media/drugs_particle.png");
+            var FireParticle:BitmapData = Assets.getBitmapData("media/fire_particle.png");
+            var SunParticle:BitmapData = Assets.getBitmapData("media/sun_particle.png");
+            var JellyfishParticle:BitmapData = Assets.getBitmapData("media/jellyfish_particle.png");
+            
+            var drugsConfig:Xml = Xml.parse(DrugsConfig);
+            var drugsTexture:Texture = Texture.fromBitmapData(DrugsParticle);
 
-            var fireConfig:XML = XML(new FireConfig());
-            var fireTexture:Texture = Texture.fromEmbeddedAsset(FireParticle);
+            var fireConfig:Xml = Xml.parse(FireConfig);
+            var fireTexture:Texture = Texture.fromBitmapData(FireParticle);
 
-            var sunConfig:XML = XML(new SunConfig());
-            var sunTexture:Texture = Texture.fromEmbeddedAsset(SunParticle);
+            var sunConfig:Xml = Xml.parse(SunConfig);
+            var sunTexture:Texture = Texture.fromBitmapData(SunParticle);
 
-            var jellyConfig:XML = XML(new JellyfishConfig());
-            var jellyTexture:Texture = Texture.fromEmbeddedAsset(JellyfishParticle);
+            var jellyConfig:Xml = Xml.parse(JellyfishConfig);
+            var jellyTexture:Texture = Texture.fromBitmapData(JellyfishParticle);
 
-            _particleSystems = new <ParticleSystem>[
+            _particleSystems = [
                 new PDParticleSystem(drugsConfig, drugsTexture),
                 new PDParticleSystem(fireConfig, fireTexture),
                 new PDParticleSystem(sunConfig, sunTexture),
@@ -75,13 +92,13 @@ package
             addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
         }
         
-        private function startNextParticleSystem():void
+        private function startNextParticleSystem():Void
         {
-            if (_particleSystem)
+            if (_particleSystem != null)
             {
                 _particleSystem.stop();
                 _particleSystem.removeFromParent();
-                Starling.juggler.remove(_particleSystem);
+                Starling.sJuggler.remove(_particleSystem);
             }
             
             _particleSystem = _particleSystems.shift();
@@ -92,10 +109,10 @@ package
             _particleSystem.start();
             
             addChild(_particleSystem);
-            Starling.juggler.add(_particleSystem);
+            Starling.sJuggler.add(_particleSystem);
         }
         
-        private function onAddedToStage(event:Event):void
+        private function onAddedToStage(event:Event):Void
         {
             stage.addEventListener(KeyboardEvent.KEY_DOWN, onKey);
             stage.addEventListener(TouchEvent.TOUCH, onTouch);
@@ -103,26 +120,26 @@ package
             startNextParticleSystem();
         }
         
-        private function onRemovedFromStage(event:Event):void
+        private function onRemovedFromStage(event:Event):Void
         {
             stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKey);
             stage.removeEventListener(TouchEvent.TOUCH, onTouch);
         }
         
-        private function onKey(event:Event, keyCode:uint):void
+        private function onKey(event:Event, keyCode:UInt):Void
         {
             if (keyCode == Keyboard.SPACE)
                 startNextParticleSystem();
         }
         
-        private function onTouch(event:TouchEvent):void
+        private override function onTouch(event:TouchEvent):Void
         {
             var touch:Touch = event.getTouch(stage);
-            if (touch && touch.phase != TouchPhase.HOVER)
+            if (touch != null && touch.phase != TouchPhase.HOVER)
             {
                 _particleSystem.emitterX = touch.globalX;
                 _particleSystem.emitterY = touch.globalY;
             }
         }
     }
-}
+//}

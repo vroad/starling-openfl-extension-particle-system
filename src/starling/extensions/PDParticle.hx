@@ -8,25 +8,30 @@
 //
 // =================================================================================================
 
-package starling.extensions
-{
-    public class PDParticle extends Particle
+package starling.extensions;
+//{
+    class PDParticle extends Particle
     {
         public var colorArgb:ColorArgb;
         public var colorArgbDelta:ColorArgb;
-        public var startX:Number, startY:Number;
-        public var velocityX:Number, velocityY:Number;
-        public var radialAcceleration:Number;
-        public var tangentialAcceleration:Number;
-        public var emitRadius:Number, emitRadiusDelta:Number;
-        public var emitRotation:Number, emitRotationDelta:Number;
-        public var rotationDelta:Number;
-        public var scaleDelta:Number;
+        public var startX:Float;
+        public var startY:Float;
+        public var velocityX:Float;
+        public var velocityY:Float;
+        public var radialAcceleration:Float;
+        public var tangentialAcceleration:Float;
+        public var emitRadius:Float;
+        public var emitRadiusDelta:Float;
+        public var emitRotation:Float;
+        public var emitRotationDelta:Float;
+        public var rotationDelta:Float;
+        public var scaleDelta:Float;
         
-        public function PDParticle()
+        public function new()
         {
+            super();
             colorArgb = new ColorArgb();
             colorArgbDelta = new ColorArgb();
         }
     }
-}
+//}

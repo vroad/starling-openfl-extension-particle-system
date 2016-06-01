@@ -8,24 +8,24 @@
 //
 // =================================================================================================
 
-package starling.extensions
-{
-    public class Particle
+package starling.extensions;
+//{
+    class Particle
     {
-        public var x:Number;
-        public var y:Number;
-        public var scale:Number;
-        public var rotation:Number;
-        public var color:uint;
-        public var alpha:Number;
-        public var currentTime:Number;
-        public var totalTime:Number;
+        public var x:Float;
+        public var y:Float;
+        public var scale:Float;
+        public var rotation:Float;
+        public var color:UInt;
+        public var alpha:Float;
+        public var currentTime:Float;
+        public var totalTime:Float;
 
-        public function Particle()
+        public function new()
         {
             x = y = rotation = currentTime = 0.0;
             totalTime = alpha = scale = 1.0;
             color = 0xffffff;
         }
     }
-}
+//}
