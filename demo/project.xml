@@ -16,6 +16,7 @@
 	<haxelib name="openfl" />
 	
 	<haxedef name="dom" if="html5" />
+    <haxedef name="starling_particle_parallelize" if="cs" unless="no_starling_particle_parallelize" />
 
 	<android minimum-sdk-version="9" target-sdk-version="23" />
 	

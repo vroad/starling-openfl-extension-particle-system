@@ -15,6 +15,7 @@ package starling.extensions;
     import flash.geom.Point;
     import flash.geom.Rectangle;
     import openfl.Vector;
+    import starling.extensions._internal.ParallelUtils;
     import starling.utils.Max;
 
     import starling.animation.IAnimatable;
@@ -37,7 +38,7 @@ package starling.extensions;
     
     class ParticleSystem extends Mesh implements IAnimatable
     {
-        inline public static var MAX_NUM_PARTICLES:Int = 16383;
+        inline public static var MAX_NUM_PARTICLES:Int = 200000;
         
         private var _effect:MeshEffect;
         #if 0
@@ -196,36 +197,39 @@ package starling.extensions;
             setRequiresRedraw();
             setRequiresSync();
 
+            #if 0
             var particleIndex:Int = 0;
             var particle:Particle;
+            #end
             var maxNumParticles:Int = capacity;
             
             // advance existing particles
 
-            while (particleIndex < _numParticles)
+            ParallelUtils.For (0, _numParticles, function (particleIndex:Int)
             {
-                particle = _particles[particleIndex];
+                var particle:Particle = _particles[particleIndex];
                 
                 if (particle.currentTime < particle.totalTime)
-                {
                     advanceParticle(particle, passedTime);
-                    ++particleIndex;
-                }
                 else
                 {
-                    if (particleIndex != _numParticles - 1)
+                    ParallelUtils.lock(_particles,
                     {
-                        var nextParticle:Particle = _particles[_numParticles-1];
-                        _particles[_numParticles-1] = particle;
-                        _particles[particleIndex] = nextParticle;
-                    }
-
-                    --_numParticles;
-
-                    if (_numParticles == 0 && _emissionTime == 0)
-                        dispatchEventWith(Event.COMPLETE);
+                        if (particleIndex != _numParticles - 1)
+                        {
+                            var nextParticle:Particle = _particles[_numParticles-1];
+                            _particles[_numParticles-1] = particle;
+                            _particles[particleIndex] = nextParticle;
+                        }
+                        
+                        --_numParticles;
+                        
+                        if (_numParticles == 0 && _emissionTime == 0)
+                            dispatchEventWith(Event.COMPLETE);
+                        
+                    });
                 }
-            }
+            });
             
             // create and advance new particles
             
@@ -238,7 +242,7 @@ package starling.extensions;
                 {
                     if (_numParticles < maxNumParticles)
                     {
-                        particle = _particles[_numParticles];
+                        var particle:Particle = _particles[_numParticles];
                         initParticle(particle);
                         
                         // particle might be dead at birth
@@ -270,7 +274,7 @@ package starling.extensions;
             var pivotX:Float = texture != null ? texture.width  / 2 : 5;
             var pivotY:Float = texture != null ? texture.height / 2 : 5;
             
-            for (i in 0 ... _numParticles)
+            ParallelUtils.For(0, _numParticles, function(i:Int)
             {
                 var vertexID = i * 4;
                 var particle = _particles[i];
@@ -280,7 +284,7 @@ package starling.extensions;
                 var x = particle.x;
                 var y = particle.y;
 
-                _vertexData.colorize("color", particle.color, particle.alpha, vertexID, 4);
+                _vertexData.fastColorize_premultiplied(particle.color, particle.alpha, vertexID, 4);
 
                 if (rotation != 0)
                 {
@@ -291,20 +295,21 @@ package starling.extensions;
                     var sinX:Float = sin * offsetX;
                     var sinY:Float = sin * offsetY;
                     
-                    _vertexData.setPoint(vertexID,   "position", x - cosX + sinY, y - sinX - cosY);
-                    _vertexData.setPoint(vertexID+1, "position", x + cosX + sinY, y + sinX - cosY);
-                    _vertexData.setPoint(vertexID+2, "position", x - cosX - sinY, y - sinX + cosY);
-                    _vertexData.setPoint(vertexID+3, "position", x + cosX - sinY, y + sinX + cosY);
+                    _vertexData.setPosition(vertexID,   x - cosX + sinY, y - sinX - cosY);
+                    _vertexData.setPosition(vertexID+1, x + cosX + sinY, y + sinX - cosY);
+                    _vertexData.setPosition(vertexID+2, x - cosX - sinY, y - sinX + cosY);
+                    _vertexData.setPosition(vertexID+3, x + cosX - sinY, y + sinX + cosY);
                 }
                 else 
                 {
                     // optimization for rotation == 0
-                    _vertexData.setPoint(vertexID,   "position", x - offsetX, y - offsetY);
-                    _vertexData.setPoint(vertexID+1, "position", x + offsetX, y - offsetY);
-                    _vertexData.setPoint(vertexID+2, "position", x - offsetX, y + offsetY);
-                    _vertexData.setPoint(vertexID+3, "position", x + offsetX, y + offsetY);
+                    _vertexData.setPosition(vertexID,   x - offsetX, y - offsetY);
+                    _vertexData.setPosition(vertexID+1, x + offsetX, y - offsetY);
+                    _vertexData.setPosition(vertexID+2, x - offsetX, y + offsetY);
+                    _vertexData.setPosition(vertexID+3, x + offsetX, y + offsetY);
                 }
-            }
+            });
+            _vertexData.tinted = true;
         }
 
         override public function render(painter:Painter):Void
