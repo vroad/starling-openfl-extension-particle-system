@@ -130,6 +130,8 @@ package;
         {
             if (keyCode == Keyboard.SPACE)
                 startNextParticleSystem();
+            else if (keyCode == Keyboard.ENTER)
+                trace("numParticles:" + _particleSystem.numParticles);
         }
         
         private override function onTouch(event:TouchEvent):Void
