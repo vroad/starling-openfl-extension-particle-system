@@ -31,6 +31,8 @@ package starling.extensions;
     import starling.textures.Texture;
     import starling.utils.MatrixUtil;
 
+    using starling.rendering.VertexDataTools;
+
     /** Dispatched when emission of particles is finished. */
     #if 0
     [Event(name="complete", type="starling.events.Event")]
@@ -295,18 +297,18 @@ package starling.extensions;
                     var sinX:Float = sin * offsetX;
                     var sinY:Float = sin * offsetY;
                     
-                    _vertexData.setPosition(vertexID,   x - cosX + sinY, y - sinX - cosY);
-                    _vertexData.setPosition(vertexID+1, x + cosX + sinY, y + sinX - cosY);
-                    _vertexData.setPosition(vertexID+2, x - cosX - sinY, y - sinX + cosY);
-                    _vertexData.setPosition(vertexID+3, x + cosX - sinY, y + sinX + cosY);
+                    _vertexData.fastSetPosition(vertexID,   x - cosX + sinY, y - sinX - cosY);
+                    _vertexData.fastSetPosition(vertexID+1, x + cosX + sinY, y + sinX - cosY);
+                    _vertexData.fastSetPosition(vertexID+2, x - cosX - sinY, y - sinX + cosY);
+                    _vertexData.fastSetPosition(vertexID+3, x + cosX - sinY, y + sinX + cosY);
                 }
                 else 
                 {
                     // optimization for rotation == 0
-                    _vertexData.setPosition(vertexID,   x - offsetX, y - offsetY);
-                    _vertexData.setPosition(vertexID+1, x + offsetX, y - offsetY);
-                    _vertexData.setPosition(vertexID+2, x - offsetX, y + offsetY);
-                    _vertexData.setPosition(vertexID+3, x + offsetX, y + offsetY);
+                    _vertexData.fastSetPosition(vertexID,   x - offsetX, y - offsetY);
+                    _vertexData.fastSetPosition(vertexID+1, x + offsetX, y - offsetY);
+                    _vertexData.fastSetPosition(vertexID+2, x - offsetX, y + offsetY);
+                    _vertexData.fastSetPosition(vertexID+3, x + offsetX, y + offsetY);
                 }
             });
             _vertexData.tinted = true;
@@ -371,10 +373,10 @@ package starling.extensions;
             }
             else
             {
-                baseVertexData.setPoint(0, "position",  0,  0);
-                baseVertexData.setPoint(1, "position", 10,  0);
-                baseVertexData.setPoint(2, "position",  0, 10);
-                baseVertexData.setPoint(3, "position", 10, 10);
+                baseVertexData.fastSetPosition(0, 0,  0);
+                baseVertexData.fastSetPosition(1, 10,  0);
+                baseVertexData.fastSetPosition(2, 0, 10);
+                baseVertexData.fastSetPosition(3, 10, 10);
             }
 
             for (i in oldCapacity ... newCapacity)
