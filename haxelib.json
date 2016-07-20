@@ -1,0 +1,11 @@
+{
+	"name": "starling-openfl-extension-particle-system",
+	"url": "https://github.com/openfl/starling-openfl-extension-particle-system",
+	"license": "BSD",
+	"tags": [],
+	"description": "An unofficial port of Starling particle extension",
+	"version": "2.0.0",
+	"releasenote": "",
+	"classPath": "src",
+	"contributors": [ "vroad" ]
+}
